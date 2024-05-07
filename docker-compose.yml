@@ -1,0 +1,56 @@
+#include:
+#  - front/docker-compose.yml
+#  - cms/docker-compose.yml
+
+services:
+  api:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      target: ${ENV:-development}
+    ports:
+      - "${API_PORT:-8080}:8080"
+    environment:
+      PG_DB: ${PG_DB}
+      PG_USER: ${PG_USER}
+      PG_PASSWORD: ${PG_PASSWORD}
+      PG_HOST: ${PG_HOST}
+      PG_PORT: 5432
+#    volumes:
+#      - type: volume
+#        source: ./
+#        target: /app
+#        read_only: true
+    depends_on:
+      - db
+    profiles:
+      - images
+    develop:
+      watch:
+        # отслеживает изменения в go.mod, go.sum и перестраивает контейнер и изображение
+        - path: ./go.mod
+          action: rebuild
+        - path: ./go.sum
+          action: rebuild
+        # отслеживает изменения во внутреннем каталоге и синхронизирует их с контейнером realtime
+        - path: ./
+          target: /app
+          action: sync+restart
+          ignore:
+            - vendor/
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: ${PG_DB}
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+    ports:
+      - "${PG_PORT:-54321}:5432"
+    volumes:
+      - db_volume:/var/lib/postgresql/data
+    profiles:
+      - images
+
+volumes:
+  db_volume:
