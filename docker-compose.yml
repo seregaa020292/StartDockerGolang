@@ -1,6 +1,7 @@
 #include:
-#  - front/docker-compose.yml
-#  - cms/docker-compose.yml
+#  - path:
+#    - ./front/docker-compose.yml
+#    - ./cms/docker-compose.yml
 
 services:
   api:
@@ -51,6 +52,15 @@ services:
       - db_volume:/var/lib/postgresql/data
     profiles:
       - images
+
+#  front:
+#    extends:
+#      service: front
+#      file: ./front/docker-compose.yml
+#    environment:
+#      DEBUG: 1
+#    profiles:
+#      - development
 
 volumes:
   db_volume:

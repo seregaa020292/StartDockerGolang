@@ -19,13 +19,16 @@ build:
 	docker compose build $(CMD_ARGS)
 
 logs:
-	docker compose logs -f $(CMD_ARGS)
+	docker compose --profile images logs -f $(CMD_ARGS)
 
 test:
 	docker build -f Dockerfile --target test .
 
 test-export:
 	docker build -f Dockerfile --target test-export -q -o ./out .
+
+env-create:
+	[ -f .env ] || cp .env.example .env
 
 deps-install:
 	[ -f $(LOCAL_BIN)/jet ] || GOBIN=$(LOCAL_BIN) go install github.com/go-jet/jet/v2/cmd/jet@latest

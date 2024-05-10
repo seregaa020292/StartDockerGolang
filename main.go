@@ -18,17 +18,22 @@ var Version string
 func main() {
 	log.Printf("starting server version: %s\n", Version)
 
-	_ = newPostgres()
+	db := newPostgres()
+	handler := Handler{db: db}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /{$}", indexHandler)
+	mux.HandleFunc("GET /{$}", handler.Home)
 
 	if err := http.ListenAndServe(net.JoinHostPort("", "8080"), mux); err != nil {
 		log.Fatalf("error starting server: %s", err)
 	}
 }
 
-func indexHandler(w http.ResponseWriter, r *http.Request) {
+type Handler struct {
+	db *sql.DB
+}
+
+func (h Handler) Home(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "request thise time: %s, (%s)", time.Now().Format(time.RFC3339), gofakeit.FirstName())
 }
 
