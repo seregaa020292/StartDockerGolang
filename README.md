@@ -5,3 +5,4 @@
 - https://www.youtube.com/watch?v=VOyyGX1MOU0&ab_channel=Docker
 - https://github.com/forbiddencoding/docker-compose-watch-golang
 - https://github.com/fonil/dockerized-go
+- https://docs.docker.com/compose/compose-file/14-include/

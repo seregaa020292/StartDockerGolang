@@ -2,7 +2,6 @@
 
 ARG GO_VERSION=1.22
 ARG ALPINE_VERSION=3.19
-ARG VERSION="v0.0.0+unknown"
 
 #-------------------------------------------------------------------------------
 # STAGE: BASE
@@ -32,6 +31,7 @@ COPY --from=test /tmp/result.txt /
 # STAGE: BUILD
 #-------------------------------------------------------------------------------
 FROM base AS build
+ARG VERSION="v0.0.0+unknown"
 ENV CGO_ENABLED=0 \
     GOOS=linux \
     GOARCH=amd64
@@ -44,8 +44,10 @@ RUN --mount=type=cache,target=${GOMODCACHE} \
 # STAGE: DEVELOPMENT
 #-------------------------------------------------------------------------------
 FROM base AS development
+ARG VERSION="v0.0.0+unknown"
+ENV _VERSION=$VERSION
 COPY . .
-CMD ["sh", "-c", "go run -ldflags=\"-X 'main.Version=${VERSION}'\" main.go"]
+CMD ["sh", "-c", "go run -ldflags=\"-X 'main.Version=${_VERSION}'\" main.go"]
 
 #-------------------------------------------------------------------------------
 # STAGE: PRODUCTION
