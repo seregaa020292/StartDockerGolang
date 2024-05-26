@@ -23,6 +23,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /{$}", handler.Home)
+	mux.HandleFunc("GET /health/{$}", handler.Health)
 
 	if err := http.ListenAndServe(net.JoinHostPort("", "8080"), mux); err != nil {
 		log.Fatalf("error starting server: %s", err)
@@ -35,6 +36,11 @@ type Handler struct {
 
 func (h Handler) Home(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "request thise time: %s, (%s)", time.Now().Format(time.RFC3339), gofakeit.FirstName())
+}
+
+func (h Handler) Health(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "ok")
 }
 
 func newPostgres() *sql.DB {

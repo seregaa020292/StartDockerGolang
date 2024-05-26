@@ -32,6 +32,7 @@ env-create:
 
 deps-install:
 	[ -f $(LOCAL_BIN)/jet ] || GOBIN=$(LOCAL_BIN) go install github.com/go-jet/jet/v2/cmd/jet@latest
+	[ -f $(LOCAL_BIN)/air ] || curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b $(LOCAL_BIN) v1.52.0
 
 generate-jet:
 	$(LOCAL_BIN)/jet -source=postgres -dsn=${PG_DSN} -path=./internal/models -ignore-tables=goose_db_version

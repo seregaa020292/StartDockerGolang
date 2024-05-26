@@ -24,6 +24,7 @@ services:
 #        read_only: true
     depends_on:
       - db
+    restart: on-failure
     profiles:
       - images
     develop:

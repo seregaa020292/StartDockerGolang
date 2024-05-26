@@ -8,7 +8,9 @@ ARG ALPINE_VERSION=3.19
 #-------------------------------------------------------------------------------
 FROM golang:${GO_VERSION}-alpine AS base
 WORKDIR /app
-RUN apk add --no-cache gcc gettext musl-dev tzdata
+RUN --mount=type=cache,target=/var/cache/apk \
+    apk --update add ca-certificates tzdata \
+    && update-ca-certificates
 RUN --mount=type=cache,target=${GOMODCACHE} \
     --mount=type=bind,source=go.mod,target=go.mod \
     --mount=type=bind,source=go.sum,target=go.sum \
@@ -54,4 +56,6 @@ CMD ["sh", "-c", "go run -ldflags=\"-X 'main.Version=${_VERSION}'\" main.go"]
 #-------------------------------------------------------------------------------
 FROM alpine:${ALPINE_VERSION} AS production
 COPY --from=build /bin/app /bin/app
+HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
+    CMD wget -qO- http://localhost:8080/health || exit 1
 ENTRYPOINT ["/bin/app"]
