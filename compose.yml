@@ -18,7 +18,7 @@ services:
       PG_HOST: ${PG_HOST}
       PG_PORT: 5432
 #    volumes:
-#      - type: volume
+#      - type: bind
 #        source: ./
 #        target: /app
 #        read_only: true
@@ -53,6 +53,12 @@ services:
       - db_volume:/var/lib/postgresql/data
     profiles:
       - images
+    healthcheck:
+      test: [ "CMD", "pg_isready -d ${PG_DB} -U ${PG_USER}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: on-failure
 
 #  front:
 #    extends:
